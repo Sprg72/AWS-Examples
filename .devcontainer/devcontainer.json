@@ -6,4 +6,9 @@
       "version": "latest"
     }
   }
+  ,
+  "containerEnv": {
+    "AWS_CLI_AUTO_PROMPT": "on-partial"
+  },
+  "postCreateCommand": "mkdir -p ~/.aws && if [ -n \"$AWS_ACCESS_KEY_ID\" ] && [ -n \"$AWS_SECRET_ACCESS_KEY\" ]; then aws configure set aws_access_key_id \"$AWS_ACCESS_KEY_ID\" && aws configure set aws_secret_access_key \"$AWS_SECRET_ACCESS_KEY\" && [ -n \"$AWS_DEFAULT_REGION\" ] && aws configure set region \"$AWS_DEFAULT_REGION\"; fi && aws configure set cli_auto_prompt on-partial || true"
 }
