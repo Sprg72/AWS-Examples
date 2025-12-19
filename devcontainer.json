@@ -1,3 +1,8 @@
-"features": {
-  "aws-cli": "latest"
+{
+  // ... existing properties ...
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {
+      "version": "latest"
+    }
+  }
 }
