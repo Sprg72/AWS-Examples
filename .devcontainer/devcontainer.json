@@ -6,11 +6,16 @@
       "version": "latest"
     }
   },
+  "remoteEnv": {
+    "AWS_ACCESS_KEY_ID": "${localEnv:AWS_ACCESS_KEY_ID}",
+    "AWS_SECRET_ACCESS_KEY": "${localEnv:AWS_SECRET_ACCESS_KEY}",
+    "AWS_DEFAULT_REGION": "${localEnv:AWS_DEFAULT_REGION}"
+  },
   "containerEnv": {
     "AWS_CLI_AUTO_PROMPT": "on-partial"
   },
   "mounts": [
     "source=${localEnv:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached"
   ],
-  "postCreateCommand": "mkdir -p ~/.aws && PROFILE='${AWS_PROFILE:-default}' && if [ -n '$AWS_ACCESS_KEY_ID' ] && [ -n '$AWS_SECRET_ACCESS_KEY' ]; then aws configure set aws_access_key_id '$AWS_ACCESS_KEY_ID' --profile '$PROFILE' && aws configure set aws_secret_access_key '$AWS_SECRET_ACCESS_KEY' --profile '$PROFILE' && aws configure set region 'eu-north-1' --profile '$PROFILE' && aws configure set output json --profile '$PROFILE' && echo 'export AWS_PROFILE=$PROFILE' >> ~/.bashrc; else echo 'No AWS credentials in env; using SSO fallback'; fi && aws configure set cli_auto_prompt on-partial && aws --profile ${AWS_PROFILE:-default} sts get-caller-identity || true"
+  "postCreateCommand": "mkdir -p ~/.aws && if [ -n \"$AWS_ACCESS_KEY_ID\" ] && [ -n \"$AWS_SECRET_ACCESS_KEY\" ]; then aws configure set aws_access_key_id \"$AWS_ACCESS_KEY_ID\" --profile default && aws configure set aws_secret_access_key \"$AWS_SECRET_ACCESS_KEY\" --profile default && aws configure set region \"$AWS_DEFAULT_REGION\" --profile default && aws configure set output json --profile default && echo \"AWS credentials configured for default profile\"; else echo \"No AWS credentials found\"; fi && aws configure list && aws sts get-caller-identity"
 }
