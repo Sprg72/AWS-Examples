@@ -5,21 +5,12 @@
     "ghcr.io/devcontainers/features/aws-cli:1": {
       "version": "latest"
     }
-  }
-  ,
+  },
   "containerEnv": {
     "AWS_CLI_AUTO_PROMPT": "on-partial"
   },
   "mounts": [
     "source=${localEnv:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached"
   ],
-  "postCreateCommand": "mkdir -p ~/.aws; PROFILE=\"${AWS_PROFILE:-default}\"; if [ -n \"$AWS_ACCESS_KEY_ID\" ] && [ -n \"$AWS_SECRET_ACCESS_KEY\" ]; then aws configure set aws_access_key_id \"$AWS_ACCESS_KEY_ID\" --profile \"$PROFILE\"; aws configure set aws_secret_access_key \"$AWS_SECRET_ACCESS_KEY\" --profile \"$PROFILE\"; if [ -n \"$AWS_SESSION_TOKEN\" ]; then aws configure set aws_session_token \"$AWS_SESSION_TOKEN\" --profile \"$PROFILE\"; fi; if [ -n \"$AWS_DEFAULT_REGION\" ]; then aws configure set region \"$AWS_DEFAULT_REGION\" --profile \"$PROFILE\"; fi; fi; for f in ~/.bashrc ~/.profile ~/.bash_profile ~/.zshrc; do [ -f \"$f\" ] && sed -i.bak '/AWS_ACCESS_KEY_ID/d;/AWS_SECRET_ACCESS_KEY/d;/AWS_SESSION_TOKEN/d;/AWS_DEFAULT_REGION/d;/AWS_PROFILE/d' \"$f\"; done; if ! grep -q '^export AWS_PROFILE=' ~/.bashrc 2>/dev/null; then echo 'export AWS_PROFILE=default' >> ~/.bashrc; fi; chmod 600 ~/.aws/credentials || true; # ensure SSO config uses provided start url and region
-  if [ ! -f ~/.aws/config ] || ! grep -q 'sso_start_url' ~/.aws/config 2>/dev/null; then mkdir -p ~/.aws; cat >> ~/.aws/config <<'EOF'
-[default]
-sso_start_url = https://scania.awsapps.com/start/#/?tab=accounts
-sso_region = eu-west-1
-region = eu-west-1
-output = json
-EOF
-fi; aws configure set cli_auto_prompt on-partial || true"
+  "postCreateCommand": "mkdir -p ~/.aws && PROFILE='${AWS_PROFILE:-default}' && if [ -n '$AWS_ACCESS_KEY_ID' ] && [ -n '$AWS_SECRET_ACCESS_KEY' ]; then aws configure set aws_access_key_id '$AWS_ACCESS_KEY_ID' --profile '$PROFILE' && aws configure set aws_secret_access_key '$AWS_SECRET_ACCESS_KEY' --profile '$PROFILE' && aws configure set region 'eu-north-1' --profile '$PROFILE' && aws configure set output json --profile '$PROFILE' && echo 'export AWS_PROFILE=$PROFILE' >> ~/.bashrc; else echo 'No AWS credentials in env; using SSO fallback'; fi && aws configure set cli_auto_prompt on-partial && aws --profile ${AWS_PROFILE:-default} sts get-caller-identity || true"
 }
